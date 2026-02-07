@@ -2,52 +2,88 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hollowwasibelo</title>
+    <title>Hollowwasibelo - Inicio</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: black; font-family: sans-serif; }
+        /* Estilos visuales ORIGINALES */
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; background: black; }
         
-        /* PORTADA ORIGINAL */
         #pantalla-inicio {
             width: 100vw; height: 100vh;
-            background: url('fondocorazon.png') no-repeat center center fixed;
+            background: url('fondo.png') no-repeat center center fixed; 
             background-size: cover;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
+            position: relative;
             transition: opacity 1s;
         }
 
+        /* PANTALLA DE CARGA (Añadida sin tocar tus estilos anteriores) */
         #pantalla-carga {
             display: none; width: 100vw; height: 100vh;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('fondocorazon.png');
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('fondo.png');
             background-size: cover;
             flex-direction: column; justify-content: center; align-items: center;
             opacity: 0; transition: opacity 1s;
         }
 
-        .contenedor-corazones { display: flex; gap: 20px; margin-bottom: 20px; }
-        
-        .corazon {
-            width: 80px; height: 80px;
-            filter: grayscale(100%); opacity: 0.3;
-            transition: all 0.3s; cursor: pointer;
-        }
-        
+        .contenedor-corazones { display: flex; gap: 20px; margin-bottom: 20px; z-index: 20; }
+        .corazon { width: 80px; height: 80px; cursor: pointer; filter: grayscale(100%); opacity: 0.3; transition: all 0.3s; }
         .corazon.activo { filter: grayscale(0%); opacity: 1; transform: scale(1.1); }
-
-        #frase-amorosa { color: white; text-align: center; font-family: 'Courier New', monospace; font-size: 1.2rem; margin-top: 20px; text-shadow: 2px 2px 4px black; min-height: 1.5em; }
+        #frase-amorosa { color: white; text-align: center; font-family: monospace; font-size: 1.2rem; text-shadow: 2px 2px 4px black; min-height: 1.5em; }
 
         #btn-listo {
             display: none; margin-top: 30px; padding: 15px 40px;
             background: #ff4d4d; color: white; border: 2px solid white; border-radius: 10px;
             cursor: pointer; font-size: 1.5rem; font-weight: bold;
         }
+
+        /* Animación del Botón ORIGINAL */
+        .boton-jugar {
+            padding: 15px 50px;
+            font-size: 2rem;
+            color: white;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #5ecad9;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            border-radius: 5px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .boton-jugar:hover {
+            background: #5ecad9;
+            color: black;
+            transform: scale(1.1);
+            box-shadow: 0 0 20px #5ecad9;
+        }
+
+        .boton-jugar:active { transform: scale(0.9); }
+
+        /* Efecto de Hojas Cayendo ORIGINAL */
+        .hoja {
+            position: absolute;
+            top: -50px;
+            width: 15px; height: 15px;
+            background: #2d5a27;
+            border-radius: 0 100% 0 100%;
+            opacity: 0.7;
+            animation: caer linear infinite;
+        }
+
+        @keyframes caer {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.7; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
     </style>
 </head>
 <body>
 
+    <audio id="musica" src="audio.mp3"></audio>
+
     <div id="pantalla-inicio">
-        <h1 style="color: white; font-size: 4rem; text-shadow: 3px 3px 10px black; margin-bottom: 20px;">Hollowwasibelo</h1>
-        <button onclick="sonarAudio()" ondblclick="irACarga()" style="padding: 15px 40px; font-size: 1.2rem; cursor: pointer; border-radius: 50px; border: none; background: white; font-weight: bold;">JUGAR</button>
-        <p style="color: white; margin-top: 10px; opacity: 0.8; text-shadow: 1px 1px 2px black;">(Doble clic para iniciar)</p>
+        <button class="boton-jugar" onclick="sonarPrimero()" ondblclick="iniciarJuego()">Jugar</button>
     </div>
 
     <div id="pantalla-carga">
@@ -57,14 +93,12 @@
             <img src="corazon.png" id="cor3" class="corazon" onclick="clicCorazon(3)" style="display: none;">
             <img src="corazon.png" id="cor4" class="corazon" onclick="clicCorazon(4)" style="display: none;">
         </div>
-        <p id="frase-amorosa">Haz clic 5 veces en el corazón para cargar...</p>
+        <p id="frase-amorosa">Haz clic 5 veces en el corazón...</p>
         <button id="btn-listo" onclick="alert('¡Nivel 1 próximamente!')">¿LISTO?</button>
     </div>
 
-    <audio id="reproductor"></audio>
-
     <script>
-        const reproductor = document.getElementById('reproductor');
+        const musica = document.getElementById('musica');
         let clicsInternos = 0;
         let corazonActual = 1;
 
@@ -75,17 +109,32 @@
             "¡Todo listo para nuestra aventura!"
         ];
 
-        function sonarAudio() {
-            if (reproductor.src.indexOf("audio.mp3") === -1) {
-                reproductor.src = "audio.mp3";
-                reproductor.play();
+        // HOJAS ORIGINALES
+        function crearHoja() {
+            const hoja = document.createElement('div');
+            hoja.classList.add('hoja');
+            hoja.style.left = Math.random() * 100 + "vw";
+            hoja.style.animationDuration = (Math.random() * 3 + 2) + "s";
+            const contenedor = document.getElementById('pantalla-inicio');
+            if(contenedor) contenedor.appendChild(hoja);
+            setTimeout(() => { hoja.remove(); }, 5000);
+        }
+        setInterval(crearHoja, 300);
+
+        // 1. PRIMER CLIC: Suena audio.mp3
+        function sonarPrimero() {
+            if (musica.src.indexOf("audio.mp3") !== -1 || musica.src === "") {
+                musica.src = "audio.mp3";
+                musica.play();
             }
         }
 
-        function irACarga() {
-            reproductor.src = "muzika.mp3";
-            reproductor.loop = true;
-            reproductor.play();
+        // 2. DOBLE CLIC: Cambia a muzika.mp3 y carga corazones
+        function iniciarJuego() {
+            musica.src = "muzika.mp3";
+            musica.loop = true;
+            musica.play();
+
             document.getElementById('pantalla-inicio').style.opacity = '0';
             setTimeout(() => {
                 document.getElementById('pantalla-inicio').style.display = 'none';
@@ -94,6 +143,7 @@
             }, 1000);
         }
 
+        // 3. LÓGICA DE 5 CLICS Y FRASES
         function clicCorazon(num) {
             if (num !== corazonActual) return;
             clicsInternos++;
@@ -104,16 +154,14 @@
 
             if (clicsInternos >= 5) {
                 el.classList.add('activo');
-                // CAMBIO AQUÍ: La frase aparece justo al completar el corazón
                 document.getElementById('frase-amorosa').innerText = frases[corazonActual - 1];
                 
                 if (corazonActual < 4) {
                     corazonActual++;
                     clicsInternos = 0;
-                    // Mostramos el siguiente corazón después de un segundo para que se vea la frase
                     setTimeout(() => {
                         document.getElementById('cor' + corazonActual).style.display = 'block';
-                    }, 1000);
+                    }, 800);
                 } else {
                     document.getElementById('btn-listo').style.display = 'block';
                 }
