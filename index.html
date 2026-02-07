@@ -4,90 +4,132 @@
     <meta charset="UTF-8">
     <title>Hollowwasibelo - Inicio</title>
     <style>
-        /* Estilos visuales */
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; }
+        /* Estilos generales */
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; background-color: black; }
         
         #pantalla-inicio {
             width: 100vw; height: 100vh;
-            background: url('fondo.png') no-repeat center center fixed; 
+            background: url('fondo.png') no-repeat center center fixed;
             background-size: cover;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            position: relative;
+            transition: opacity 1s;
         }
 
-        /* Animación del Botón */
-        .boton-jugar {
-            padding: 15px 50px;
-            font-size: 2rem;
-            color: white;
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid #5ecad9;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 10;
-            border-radius: 5px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
+        #pantalla-carga {
+            display: none; 
+            width: 100vw; height: 100vh;
+            /* Usamos la imagen que me pasaste para el fondo de carga */
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('fondo.png'); 
+            background-size: cover;
+            flex-direction: column; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 1s;
         }
 
-        .boton-jugar:hover {
-            background: #5ecad9;
-            color: black;
-            transform: scale(1.1); /* Se agranda un poco */
-            box-shadow: 0 0 20px #5ecad9;
+        .contenedor-corazones { display: flex; gap: 20px; margin-bottom: 20px; }
+        
+        .corazon {
+            width: 70px; height: 70px;
+            filter: grayscale(100%); opacity: 0.2; /* Empiezan grises y casi invisibles */
+            transition: all 0.3s; cursor: pointer;
+        }
+        
+        /* Cuando el corazón se completa */
+        .corazon.activo { filter: grayscale(0%) !important; opacity: 1 !important; transform: scale(1.1); }
+
+        #frase-minecraft {
+            color: white; font-size: 1.3rem; text-shadow: 2px 2px 4px black;
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center; max-width: 80%;
         }
 
-        .boton-jugar:active {
-            transform: scale(0.9); /* Animación de pulso al tocarlo */
-        }
-
-        /* Efecto de Hojas Cayendo */
-        .hoja {
-            position: absolute;
-            top: -50px;
-            width: 15px; height: 15px;
-            background: #2d5a27; /* Color verde hoja */
-            border-radius: 0 100% 0 100%;
-            opacity: 0.7;
-            animation: caer linear infinite;
-        }
-
-        @keyframes caer {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.7; }
-            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        #btn-listo {
+            display: none; margin-top: 30px; padding: 15px 40px;
+            background: #ff4d4d; color: white; border: 2px solid white; border-radius: 10px;
+            cursor: pointer; font-size: 1.5rem; font-weight: bold;
+            box-shadow: 0 0 15px rgba(255, 77, 77, 0.6);
         }
     </style>
 </head>
 <body>
 
     <div id="pantalla-inicio">
-        <audio id="musica" loop>
-            <source src="musica.mp3" type="audio/mpeg">
-        </audio>
-
-        <button class="boton-jugar" onclick="iniciarJuego()">Jugar</button>
+        <h1 style="color: white; font-size: 4rem; text-shadow: 3px 3px 10px black; margin-bottom: 20px;">Hollowwasibelo</h1>
+        <button ondblclick="irACarga()" style="padding: 15px 40px; font-size: 1.2rem; cursor: pointer; border-radius: 50px; border: none; background: white; font-weight: bold;">JUGAR</button>
+        <p style="color: white; margin-top: 10px; opacity: 0.7;">(Doble clic para iniciar)</p>
     </div>
 
-    <script>
-        // Crear hojas aleatorias
-        function crearHoja() {
-            const hoja = document.createElement('div');
-            hoja.classList.add('hoja');
-            hoja.style.left = Math.random() * 100 + "vw";
-            hoja.style.animationDuration = (Math.random() * 3 + 2) + "s"; // Velocidad aleatoria
-            document.getElementById('pantalla-inicio').appendChild(hoja);
-            
-            setTimeout(() => { hoja.remove(); }, 5000);
-        }
-        setInterval(crearHoja, 300);
+    <div id="pantalla-carga">
+        <div class="contenedor-corazones">
+            <img src="corazon.png" id="cor1" class="corazon" onclick="clicCorazon(1)" style="display: block;">
+            <img src="corazon.png" id="cor2" class="corazon" onclick="clicCorazon(2)" style="display: none;">
+            <img src="corazon.png" id="cor3" class="corazon" onclick="clicCorazon(3)" style="display: none;">
+            <img src="corazon.png" id="cor4" class="corazon" onclick="clicCorazon(4)" style="display: none;">
+        </div>
+        <p id="frase-minecraft">Dale amor al primer corazón...</p>
+        <button id="btn-listo" onclick="alert('¡Próximamente: El Nivel 1!')">¿LISTO?</button>
+    </div>
 
-        // Función para el botón
-        function iniciarJuego() {
-            const musica = document.getElementById('musica');
-            musica.play(); // La música suele necesitar un clic para empezar por reglas del navegador
-            alert("¡Bienvenido a Hollowwasibelo! El juego está cargando...");
-            // Aquí podrías redirigir a la siguiente parte de tu juego
+    <audio id="musica-juego" src="musica.mp3" autoplay loop></audio>
+
+    <script>
+        let clics = 0;
+        let corazonActual = 1;
+        
+        // Aquí puedes poner las frases que quieras
+        const frases = [
+            "Llenando el primer corazón de momentos...",
+            "El segundo corazón carga nuestras risas...",
+            "Casi listo... el tercero guarda nuestros besos...",
+            "¡Corazón final! Eres lo mejor que me ha pasado."
+        ];
+
+        function irACarga() {
+            const inicio = document.getElementById('pantalla-inicio');
+            const carga = document.getElementById('pantalla-carga');
+            const audio = document.getElementById('musica-juego');
+            
+            // 1. Transición de pantallas
+            inicio.style.opacity = '0';
+            
+            // 2. Cambio de música fluido
+            audio.src = "musicadecorazon.mp3";
+            audio.play();
+
+            setTimeout(() => {
+                inicio.style.display = 'none';
+                carga.style.display = 'flex';
+                setTimeout(() => { carga.style.opacity = '1'; }, 50);
+            }, 1000);
+        }
+
+        function clicCorazon(num) {
+            // Solo funciona si cliqueas el corazón que está activo
+            if (num !== corazonActual) return; 
+
+            clics++;
+            let el = document.getElementById('cor' + num);
+            
+            // Se va coloreando y haciendo visible (20% por clic)
+            el.style.filter = `grayscale(${100 - (clics * 20)}%)`;
+            el.style.opacity = 0.2 + (clics * 0.16);
+
+            if (clics >= 5) {
+                el.classList.add('activo');
+                // Cambiamos la frase al completar el corazón
+                document.getElementById('frase-minecraft').innerText = frases[corazonActual - 1];
+                
+                if (corazonActual < 4) {
+                    corazonActual++;
+                    clics = 0;
+                    // Hacemos aparecer el siguiente corazón en gris
+                    const proximo = document.getElementById('cor' + corazonActual);
+                    proximo.style.display = 'block';
+                } else {
+                    // Aparece el botón final cuando los 4 están llenos
+                    document.getElementById('btn-listo').style.display = 'block';
+                    document.getElementById('frase-minecraft').innerText = "¡Nivel 1 desbloqueado con amor!";
+                }
+            }
         }
     </script>
 </body>
