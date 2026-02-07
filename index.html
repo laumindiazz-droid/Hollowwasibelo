@@ -1,75 +1,120 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Hollowwasibelo - Inicio</title>
+    <title>Hollowwasibelo</title>
     <style>
-        /* --- CÓDIGO 1: ESTILOS ORIGINALES (NO TOCADOS) --- */
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: black; font-family: sans-serif; }
         
+        /* PORTADA ORIGINAL REESTABLECIDA */
         #pantalla-inicio {
             width: 100vw; height: 100vh;
-            background: url('fondo.png') no-repeat center center fixed; 
+            background: url('fondocorazon.png') no-repeat center center fixed;
             background-size: cover;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            position: relative;
+            position: absolute; top: 0; left: 0; z-index: 10;
         }
 
-        .boton-jugar {
-            padding: 15px 50px;
-            font-size: 2rem;
-            color: white;
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid #5ecad9;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 10;
-            border-radius: 5px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }
-
-        .boton-jugar:hover {
-            background: #5ecad9;
-            color: black;
-            transform: scale(1.1);
-            box-shadow: 0 0 20px #5ecad9;
-        }
-
-        .boton-jugar:active {
-            transform: scale(0.9);
-        }
-
-        .hoja {
-            position: absolute;
-            top: -50px;
-            width: 15px; height: 15px;
-            background: #2d5a27;
-            border-radius: 0 100% 0 100%;
-            opacity: 0.7;
-            animation: caer linear infinite;
-        }
-
-        @keyframes caer {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.7; }
-            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-        }
-
-        /* --- CÓDIGO 2: ESTILOS DE CORAZONES (PEGADOS ABAJO) --- */
+        /* PANTALLA DE CORAZONES */
         #pantalla-carga {
-            display: none; 
-            width: 100vw; height: 100vh;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('fondo.png');
+            display: none; width: 100vw; height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('fondocorazon.png');
             background-size: cover;
             flex-direction: column; justify-content: center; align-items: center;
-            z-index: 100;
+            z-index: 5;
         }
-        .contenedor-corazones { display: flex; gap: 15px; margin-bottom: 20px; }
-        .corazon { width: 70px; height: 70px; cursor: pointer; filter: grayscale(100%); opacity: 0.3; transition: 0.3s; }
-        .corazon.activo { filter: grayscale(0%); opacity: 1; transform: scale(1.1); }
-        #frase-amorosa { color: white; text-align: center; font-family: monospace; font-size: 1.2rem; margin-top: 20px; text-shadow: 2px 2px 4px black; }
-        #btn-listo { display: none; margin-top: 30px; padding: 15px 40px; background: #ff4d4d; color: white; border: 2px solid white; border-radius: 10px; cursor: pointer
 
-    
+        .contenedor-corazones { display: flex; gap: 20px; margin-bottom: 20px; }
+        
+        .corazon {
+            width: 80px; height: 80px;
+            filter: grayscale(100%); opacity: 0.3;
+            transition: all 0.3s; cursor: pointer;
+        }
+        
+        .corazon.activo { filter: grayscale(0%); opacity: 1; transform: scale(1.1); }
+
+        #frase-amorosa { color: white; text-align: center; font-family: 'Courier New', monospace; font-size: 1.2rem; margin-top: 20px; text-shadow: 2px 2px 4px black; min-height: 1.5em; }
+
+        #btn-listo {
+            display: none; margin-top: 30px; padding: 15px 40px;
+            background: #ff4d4d; color: white; border: 2px solid white; border-radius: 10px;
+            cursor: pointer; font-size: 1.5rem; font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="pantalla-inicio">
+        <h1 style="color: white; font-size: 4rem; text-shadow: 3px 3px 10px black; margin-bottom: 20px;">Hollowwasibelo</h1>
+        <button onclick="sonarAudio()" ondblclick="irACarga()" style="padding: 15px 40px; font-size: 1.2rem; cursor: pointer; border-radius: 50px; border: none; background: white; font-weight: bold;">JUGAR</button>
+        <p style="color: white; margin-top: 10px; opacity: 0.8; text-shadow: 1px 1px 2px black;">(Doble clic para iniciar)</p>
+    </div>
+
+    <div id="pantalla-carga">
+        <div class="contenedor-corazones">
+            <img src="corazon.png" id="cor1" class="corazon" onclick="clicCorazon(1)" style="display: block;">
+            <img src="corazon.png" id="cor2" class="corazon" onclick="clicCorazon(2)" style="display: none;">
+            <img src="corazon.png" id="cor3" class="corazon" onclick="clicCorazon(3)" style="display: none;">
+            <img src="corazon.png" id="cor4" class="corazon" onclick="clicCorazon(4)" style="display: none;">
+        </div>
+        <p id="frase-amorosa">Haz clic 5 veces en el corazón para cargar...</p>
+        <button id="btn-listo" onclick="alert('¡Te amo!')">¿LISTO?</button>
+    </div>
+
+    <audio id="reproductor"></audio>
+
+    <script>
+        const reproductor = document.getElementById('reproductor');
+        let clicsInternos = 0;
+        let corazonActual = 1;
+
+        const frases = [
+            "Cada clic es un pedacito de mi corazón...",
+            "Sincronizando nuestros mundos...",
+            "Construyendo algo increíble juntos...",
+            "¡Todo listo para nuestra aventura!"
+        ];
+
+        function sonarAudio() {
+            if (reproductor.src.indexOf("audio.mp3") === -1) {
+                reproductor.src = "audio.mp3";
+                reproductor.play().catch(e => console.log("Error de audio:", e));
+            }
+        }
+
+        function irACarga() {
+            reproductor.src = "muzika.mp3";
+            reproductor.loop = true;
+            reproductor.play().catch(e => console.log("Error de audio:", e));
+            
+            document.getElementById('pantalla-inicio').style.display = 'none';
+            document.getElementById('pantalla-carga').style.display = 'flex';
+        }
+
+        function clicCorazon(num) {
+            if (num !== corazonActual) return;
+            clicsInternos++;
+            let el = document.getElementById('cor' + num);
+            
+            el.style.filter = `grayscale(${100 - (clicsInternos * 20)}%)`;
+            el.style.opacity = 0.3 + (clicsInternos * 0.14);
+
+            if (clicsInternos >= 5) {
+                el.classList.add('activo');
+                document.getElementById('frase-amorosa').innerText = frases[corazonActual - 1];
+                
+                if (corazonActual < 4) {
+                    corazonActual++;
+                    clicsInternos = 0;
+                    setTimeout(() => {
+                        document.getElementById('cor' + corazonActual).style.display = 'block';
+                    }, 800);
+                } else {
+                    document.getElementById('btn-listo').style.display = 'block';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
