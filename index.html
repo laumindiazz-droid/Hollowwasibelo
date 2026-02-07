@@ -6,7 +6,7 @@
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; background-color: black; }
         
-        /* Pantalla de Inicio */
+        /* PANTALLA DE INICIO (Tu diseño original respetado) */
         #pantalla-inicio {
             width: 100vw; height: 100vh;
             background: url('fondocorazon.png') no-repeat center center fixed;
@@ -15,7 +15,7 @@
             transition: opacity 1s;
         }
 
-        /* Pantalla de Carga */
+        /* PANTALLA DE CARGA (La nueva sorpresa) */
         #pantalla-carga {
             display: none; 
             width: 100vw; height: 100vh;
@@ -69,6 +69,7 @@
     </div>
 
     <audio id="reproductor" src="muzika.mp3" autoplay loop></audio>
+    <audio id="sonido-agua" src="agua.mp3"></audio>
 
     <script>
         let clics = 0;
@@ -86,10 +87,9 @@
             const carga = document.getElementById('pantalla-carga');
             const audio = document.getElementById('reproductor');
             
-            // Transición visual
             inicio.style.opacity = '0';
             
-            // Cambio de música
+            // Cambio a la música especial
             audio.src = "musicadecorazon.mp3";
             audio.play();
 
@@ -103,10 +103,14 @@
         function clicCorazon(num) {
             if (num !== corazonActual) return; 
 
+            // Efecto de agua
+            const sonidoAgua = document.getElementById('sonido-agua');
+            sonidoAgua.currentTime = 0; 
+            sonidoAgua.play();
+
             clics++;
             let el = document.getElementById('cor' + num);
             
-            // Se llena 20% por clic (5 clics = 100%)
             el.style.filter = `grayscale(${100 - (clics * 20)}%)`;
             el.style.opacity = 0.2 + (clics * 0.16);
 
