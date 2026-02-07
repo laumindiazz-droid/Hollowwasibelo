@@ -4,22 +4,22 @@
     <meta charset="UTF-8">
     <title>Hollowwasibelo - Inicio</title>
     <style>
-        /* Estilos generales */
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; background-color: black; }
         
+        /* Pantalla de Inicio */
         #pantalla-inicio {
             width: 100vw; height: 100vh;
-            background: url('fondo.png') no-repeat center center fixed;
+            background: url('fondocorazon.png') no-repeat center center fixed;
             background-size: cover;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             transition: opacity 1s;
         }
 
+        /* Pantalla de Carga */
         #pantalla-carga {
             display: none; 
             width: 100vw; height: 100vh;
-            /* Usamos la imagen que me pasaste para el fondo de carga */
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('fondo.png'); 
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('fondocorazon.png'); 
             background-size: cover;
             flex-direction: column; justify-content: center; align-items: center;
             opacity: 0; transition: opacity 1s;
@@ -28,15 +28,14 @@
         .contenedor-corazones { display: flex; gap: 20px; margin-bottom: 20px; }
         
         .corazon {
-            width: 70px; height: 70px;
-            filter: grayscale(100%); opacity: 0.2; /* Empiezan grises y casi invisibles */
+            width: 75px; height: 75px;
+            filter: grayscale(100%); opacity: 0.2;
             transition: all 0.3s; cursor: pointer;
         }
         
-        /* Cuando el corazón se completa */
         .corazon.activo { filter: grayscale(0%) !important; opacity: 1 !important; transform: scale(1.1); }
 
-        #frase-minecraft {
+        #frase-amorosa {
             color: white; font-size: 1.3rem; text-shadow: 2px 2px 4px black;
             font-family: 'Courier New', Courier, monospace;
             text-align: center; max-width: 80%;
@@ -55,7 +54,7 @@
     <div id="pantalla-inicio">
         <h1 style="color: white; font-size: 4rem; text-shadow: 3px 3px 10px black; margin-bottom: 20px;">Hollowwasibelo</h1>
         <button ondblclick="irACarga()" style="padding: 15px 40px; font-size: 1.2rem; cursor: pointer; border-radius: 50px; border: none; background: white; font-weight: bold;">JUGAR</button>
-        <p style="color: white; margin-top: 10px; opacity: 0.7;">(Doble clic para iniciar)</p>
+        <p style="color: white; margin-top: 10px; opacity: 0.8; text-shadow: 1px 1px 2px black;">(Doble clic para iniciar)</p>
     </div>
 
     <div id="pantalla-carga">
@@ -65,33 +64,32 @@
             <img src="corazon.png" id="cor3" class="corazon" onclick="clicCorazon(3)" style="display: none;">
             <img src="corazon.png" id="cor4" class="corazon" onclick="clicCorazon(4)" style="display: none;">
         </div>
-        <p id="frase-minecraft">Dale amor al primer corazón...</p>
-        <button id="btn-listo" onclick="alert('¡Próximamente: El Nivel 1!')">¿LISTO?</button>
+        <p id="frase-amorosa">Haz clic en el corazón para empezar...</p>
+        <button id="btn-listo" onclick="alert('¡Nivel 1 próximamente!')">¿LISTO?</button>
     </div>
 
-    <audio id="musica-juego" src="musica.mp3" autoplay loop></audio>
+    <audio id="reproductor" src="muzika.mp3" autoplay loop></audio>
 
     <script>
         let clics = 0;
         let corazonActual = 1;
         
-        // Aquí puedes poner las frases que quieras
         const frases = [
-            "Llenando el primer corazón de momentos...",
-            "El segundo corazón carga nuestras risas...",
-            "Casi listo... el tercero guarda nuestros besos...",
-            "¡Corazón final! Eres lo mejor que me ha pasado."
+            "Cada clic es un pedacito de mi corazón...",
+            "Sincronizando nuestros mundos...",
+            "Construyendo algo increíble juntos...",
+            "¡Todo listo para nuestra aventura!"
         ];
 
         function irACarga() {
             const inicio = document.getElementById('pantalla-inicio');
             const carga = document.getElementById('pantalla-carga');
-            const audio = document.getElementById('musica-juego');
+            const audio = document.getElementById('reproductor');
             
-            // 1. Transición de pantallas
+            // Transición visual
             inicio.style.opacity = '0';
             
-            // 2. Cambio de música fluido
+            // Cambio de música
             audio.src = "musicadecorazon.mp3";
             audio.play();
 
@@ -103,31 +101,27 @@
         }
 
         function clicCorazon(num) {
-            // Solo funciona si cliqueas el corazón que está activo
             if (num !== corazonActual) return; 
 
             clics++;
             let el = document.getElementById('cor' + num);
             
-            // Se va coloreando y haciendo visible (20% por clic)
+            // Se llena 20% por clic (5 clics = 100%)
             el.style.filter = `grayscale(${100 - (clics * 20)}%)`;
             el.style.opacity = 0.2 + (clics * 0.16);
 
             if (clics >= 5) {
                 el.classList.add('activo');
-                // Cambiamos la frase al completar el corazón
-                document.getElementById('frase-minecraft').innerText = frases[corazonActual - 1];
+                document.getElementById('frase-amorosa').innerText = frases[corazonActual - 1];
                 
                 if (corazonActual < 4) {
                     corazonActual++;
                     clics = 0;
-                    // Hacemos aparecer el siguiente corazón en gris
                     const proximo = document.getElementById('cor' + corazonActual);
                     proximo.style.display = 'block';
                 } else {
-                    // Aparece el botón final cuando los 4 están llenos
                     document.getElementById('btn-listo').style.display = 'block';
-                    document.getElementById('frase-minecraft').innerText = "¡Nivel 1 desbloqueado con amor!";
+                    document.getElementById('frase-amorosa').innerText = "¡Carga completa! Te amo.";
                 }
             }
         }
