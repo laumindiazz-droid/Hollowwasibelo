@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <title>Hollowwasibelo - Inicio</title>
     <style>
-        /* ESTILOS ORIGINALES RESPETADOS AL 100% */
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; background-color: black; }
         
+        /* TU DISEÑO ORIGINAL */
         #pantalla-inicio {
             width: 100vw; height: 100vh;
             background: url('fondo.png') no-repeat center center fixed; 
@@ -37,7 +37,7 @@
             box-shadow: 0 0 20px #5ecad9;
         }
 
-        /* EFECTO DE HOJAS ORIGINAL */
+        /* HOJAS ORIGINALES */
         .hoja {
             position: absolute;
             top: -50px;
@@ -54,7 +54,7 @@
             100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
         }
 
-        /* NUEVA PANTALLA DE CARGA (CORAZONES) */
+        /* PANTALLA DE CARGA MEJORADA */
         #pantalla-carga {
             display: none; 
             width: 100vw; height: 100vh;
@@ -67,10 +67,10 @@
         .contenedor-corazones { display: flex; gap: 20px; margin-bottom: 20px; }
         
         .corazon {
-            width: 80px; height: 80px;
-            filter: grayscale(100%); opacity: 0.2;
+            width: 90px; height: 90px;
+            filter: grayscale(100%); 
+            opacity: 0.7; /* Subido de 0.2 a 0.7 para que se vea bien */
             transition: all 0.3s; cursor: pointer;
-            /* TRUCO PARA QUITAR FONDO BLANCO DEL CORAZÓN */
             mix-blend-mode: multiply; 
         }
         
@@ -86,19 +86,18 @@
             display: none; margin-top: 30px; padding: 15px 40px;
             background: #ff4d4d; color: white; border: 2px solid white; border-radius: 10px;
             cursor: pointer; font-size: 1.5rem; font-weight: bold;
-            box-shadow: 0 0 15px rgba(255, 77, 77, 0.6);
         }
     </style>
 </head>
 <body>
 
     <div id="pantalla-inicio">
-        <audio id="musica" loop>
+        <audio id="musica" loop preload="auto">
             <source src="musica.mp3" type="audio/mpeg">
         </audio>
 
-        <button class="boton-jugar" ondblclick="iniciarJuego()">Jugar</button>
-        <p style="color: white; margin-top: 10px; opacity: 0.6;">(Doble clic para iniciar)</p>
+        <button class="boton-jugar" onclick="reproducirYEsperar()" ondblclick="iniciarJuego()">Jugar</button>
+        <p style="color: white; margin-top: 10px; opacity: 0.6;">(Clic para música, Doble clic para empezar)</p>
     </div>
 
     <div id="pantalla-carga">
@@ -112,11 +111,10 @@
         <button id="btn-listo" onclick="alert('¡Nivel 1 próximamente!')">¿LISTO?</button>
     </div>
 
-    <audio id="sonido-agua" src="agua.mp3"></audio>
-    <audio id="musica-especial" src="musicadecorazon.mp3" loop></audio>
+    <audio id="musica-especial" src="musicadecorazon.mp3" loop preload="auto"></audio>
 
     <script>
-        // LÓGICA DE HOJAS ORIGINAL
+        // Hojas
         function crearHoja() {
             const hoja = document.createElement('div');
             hoja.classList.add('hoja');
@@ -128,7 +126,11 @@
         }
         setInterval(crearHoja, 300);
 
-        // TRANSICIÓN A CORAZONES
+        // Lógica de Audio (Para que suene sí o sí)
+        function reproducirYEsperar() {
+            document.getElementById('musica').play();
+        }
+
         let clics = 0;
         let corazonActual = 1;
         const frases = [
@@ -144,9 +146,8 @@
             const musicaMenu = document.getElementById('musica');
             const musicaCarga = document.getElementById('musica-especial');
             
-            // Detener música de fondo y poner la nueva
             musicaMenu.pause();
-            musicaCarga.play();
+            musicaCarga.play().catch(e => console.log("Esperando interacción"));
 
             inicio.style.opacity = '0';
             setTimeout(() => {
@@ -159,14 +160,12 @@
         function clicCorazon(num) {
             if (num !== corazonActual) return; 
 
-            const sonidoAgua = document.getElementById('sonido-agua');
-            sonidoAgua.currentTime = 0; 
-            sonidoAgua.play();
-
             clics++;
             let el = document.getElementById('cor' + num);
+            
+            // Efecto visual de llenado más fuerte
             el.style.filter = `grayscale(${100 - (clics * 20)}%)`;
-            el.style.opacity = 0.2 + (clics * 0.16);
+            el.style.opacity = 0.7 + (clics * 0.06); 
 
             if (clics >= 5) {
                 el.classList.add('activo');
