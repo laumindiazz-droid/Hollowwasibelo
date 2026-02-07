@@ -4,22 +4,61 @@
     <meta charset="UTF-8">
     <title>Hollowwasibelo - Inicio</title>
     <style>
+        /* ESTILOS ORIGINALES RESPETADOS AL 100% */
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; background-color: black; }
         
-        /* PANTALLA DE INICIO (Tu diseño original respetado) */
         #pantalla-inicio {
             width: 100vw; height: 100vh;
-            background: url('fondocorazon.png') no-repeat center center fixed;
+            background: url('fondo.png') no-repeat center center fixed; 
             background-size: cover;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
+            position: relative;
             transition: opacity 1s;
         }
 
-        /* PANTALLA DE CARGA (La nueva sorpresa) */
+        .boton-jugar {
+            padding: 15px 50px;
+            font-size: 2rem;
+            color: white;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #5ecad9;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            border-radius: 5px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .boton-jugar:hover {
+            background: #5ecad9;
+            color: black;
+            transform: scale(1.1);
+            box-shadow: 0 0 20px #5ecad9;
+        }
+
+        /* EFECTO DE HOJAS ORIGINAL */
+        .hoja {
+            position: absolute;
+            top: -50px;
+            width: 15px; height: 15px;
+            background: #2d5a27;
+            border-radius: 0 100% 0 100%;
+            opacity: 0.7;
+            animation: caer linear infinite;
+        }
+
+        @keyframes caer {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.7; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* NUEVA PANTALLA DE CARGA (CORAZONES) */
         #pantalla-carga {
             display: none; 
             width: 100vw; height: 100vh;
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('fondocorazon.png'); 
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('fondocorazon.png'); 
             background-size: cover;
             flex-direction: column; justify-content: center; align-items: center;
             opacity: 0; transition: opacity 1s;
@@ -28,15 +67,17 @@
         .contenedor-corazones { display: flex; gap: 20px; margin-bottom: 20px; }
         
         .corazon {
-            width: 75px; height: 75px;
+            width: 80px; height: 80px;
             filter: grayscale(100%); opacity: 0.2;
             transition: all 0.3s; cursor: pointer;
+            /* TRUCO PARA QUITAR FONDO BLANCO DEL CORAZÓN */
+            mix-blend-mode: multiply; 
         }
         
         .corazon.activo { filter: grayscale(0%) !important; opacity: 1 !important; transform: scale(1.1); }
 
         #frase-amorosa {
-            color: white; font-size: 1.3rem; text-shadow: 2px 2px 4px black;
+            color: white; font-size: 1.4rem; text-shadow: 2px 2px 4px black;
             font-family: 'Courier New', Courier, monospace;
             text-align: center; max-width: 80%;
         }
@@ -52,9 +93,12 @@
 <body>
 
     <div id="pantalla-inicio">
-        <h1 style="color: white; font-size: 4rem; text-shadow: 3px 3px 10px black; margin-bottom: 20px;">Hollowwasibelo</h1>
-        <button ondblclick="irACarga()" style="padding: 15px 40px; font-size: 1.2rem; cursor: pointer; border-radius: 50px; border: none; background: white; font-weight: bold;">JUGAR</button>
-        <p style="color: white; margin-top: 10px; opacity: 0.8; text-shadow: 1px 1px 2px black;">(Doble clic para iniciar)</p>
+        <audio id="musica" loop>
+            <source src="musica.mp3" type="audio/mpeg">
+        </audio>
+
+        <button class="boton-jugar" ondblclick="iniciarJuego()">Jugar</button>
+        <p style="color: white; margin-top: 10px; opacity: 0.6;">(Doble clic para iniciar)</p>
     </div>
 
     <div id="pantalla-carga">
@@ -68,13 +112,25 @@
         <button id="btn-listo" onclick="alert('¡Nivel 1 próximamente!')">¿LISTO?</button>
     </div>
 
-    <audio id="reproductor" src="muzika.mp3" autoplay loop></audio>
     <audio id="sonido-agua" src="agua.mp3"></audio>
+    <audio id="musica-especial" src="musicadecorazon.mp3" loop></audio>
 
     <script>
+        // LÓGICA DE HOJAS ORIGINAL
+        function crearHoja() {
+            const hoja = document.createElement('div');
+            hoja.classList.add('hoja');
+            hoja.style.left = Math.random() * 100 + "vw";
+            hoja.style.animationDuration = (Math.random() * 3 + 2) + "s";
+            const contenedor = document.getElementById('pantalla-inicio');
+            if(contenedor) contenedor.appendChild(hoja);
+            setTimeout(() => { hoja.remove(); }, 5000);
+        }
+        setInterval(crearHoja, 300);
+
+        // TRANSICIÓN A CORAZONES
         let clics = 0;
         let corazonActual = 1;
-        
         const frases = [
             "Cada clic es un pedacito de mi corazón...",
             "Sincronizando nuestros mundos...",
@@ -82,17 +138,17 @@
             "¡Todo listo para nuestra aventura!"
         ];
 
-        function irACarga() {
+        function iniciarJuego() {
             const inicio = document.getElementById('pantalla-inicio');
             const carga = document.getElementById('pantalla-carga');
-            const audio = document.getElementById('reproductor');
+            const musicaMenu = document.getElementById('musica');
+            const musicaCarga = document.getElementById('musica-especial');
             
-            inicio.style.opacity = '0';
-            
-            // Cambio a la música especial
-            audio.src = "musicadecorazon.mp3";
-            audio.play();
+            // Detener música de fondo y poner la nueva
+            musicaMenu.pause();
+            musicaCarga.play();
 
+            inicio.style.opacity = '0';
             setTimeout(() => {
                 inicio.style.display = 'none';
                 carga.style.display = 'flex';
@@ -103,14 +159,12 @@
         function clicCorazon(num) {
             if (num !== corazonActual) return; 
 
-            // Efecto de agua
             const sonidoAgua = document.getElementById('sonido-agua');
             sonidoAgua.currentTime = 0; 
             sonidoAgua.play();
 
             clics++;
             let el = document.getElementById('cor' + num);
-            
             el.style.filter = `grayscale(${100 - (clics * 20)}%)`;
             el.style.opacity = 0.2 + (clics * 0.16);
 
@@ -121,8 +175,7 @@
                 if (corazonActual < 4) {
                     corazonActual++;
                     clics = 0;
-                    const proximo = document.getElementById('cor' + corazonActual);
-                    proximo.style.display = 'block';
+                    document.getElementById('cor' + corazonActual).style.display = 'block';
                 } else {
                     document.getElementById('btn-listo').style.display = 'block';
                     document.getElementById('frase-amorosa').innerText = "¡Carga completa! Te amo.";
